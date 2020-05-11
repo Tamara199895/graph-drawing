@@ -51,7 +51,7 @@ class Graph{
 		}
 		for($i = 0;$i < count($this->edges);$i++){
 			if (in_array($node, $this->edges[$i])) {
-				//հեռացնում է այն եզրերը որոնք կազմված էին տրված հանգույցով
+				//հեռացնում է այն կողերը որոնք կազմված էին տրված հանգույցով
 				array_splice($this->edges,$i,1);
 				$i--;
 			}
@@ -95,7 +95,7 @@ class Graph{
 </script>
   <?php  
     for($i=0;$i<count($edge);$i++){
-            for($j=0;$j<count($arr);$j++){//գտնում է եզրերի կոորդինատները;
+            for($j=0;$j<count($arr);$j++){//գտնում է կողերի կոորդինատները;
                 if ($edge[$i][0]==$arr[$j]['name']) {
                     $x1=$arr[$j]['x'];
                     $y1=$arr[$j]['y'];
@@ -110,7 +110,7 @@ class Graph{
 // print_r($arr);
   ?>                
 <script>
-function drawLine (X1, Y1, X2, Y2){//գծում է եզրերը
+function drawLine (X1, Y1, X2, Y2){//գծում է կողերը
   ctx.save();
   ctx.beginPath();
   ctx.translate(canvas.width/2, canvas.height/2)
