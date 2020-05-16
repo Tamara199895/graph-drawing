@@ -64,6 +64,90 @@ class Graph{
 			}
 		}
 	}
+	public function create_empty_copy(){
+		$g = new Graph();
+		$g->nodes = $this->nodes;
+		$g->edges = [];
+		return $g;
+	}
+	public function is_empty(){
+		if (count($this->edges) == 0) {
+			return true;
+		}
+		return false;
+	}
+	public function subgraph($nbunch=[]){
+		$graph = new Graph();
+		if ($nbunch) {
+			$graph->nodes = $nbunch;
+		}
+		else{
+			$graph->nodes = $this->nodes;
+		}
+		return $graph; 
+	}
+	public function edge_subgraph($edges){
+		$graph = new Graph();
+		$graph->add_edges($edges);
+		return $graph; 
+	}
+	public function common_neighbors($u,$v){
+		$arr = [];
+		$u_neighbors = $this->neighbors($u);
+		$v_neighbors = $this->neighbors($v);
+		for($i = 0;$i < count($u_neighbors);$i++){
+			if (in_array($u_neighbors[$i], $v_neighbors)) {
+				array_push($arr,$u_neighbors[$i]);
+			}
+		}
+		return $arr;
+	}
+	public function edges(){
+		return $this->edges;
+	}
+	public function number_of_edges(){
+		return count($this->edges);
+	}
+	public function number_of_selfloops(){
+		$count = 0;
+		for($i = 0;$i < count($this->edges);$i++){
+			if ($this->edges[$i][0] == $this->edges[$i][1]) {
+				$count++;
+			}
+		}
+		return $count;
+	}
+	public function nodes_with_selfloops(){
+		$arr=[];
+		for($i = 0;$i < count($this->edges);$i++){
+			if ($this->edges[$i][0]==$this->edges[$i][1]) {
+				array_push($arr,$this->edges[$i][1]);
+			}
+		}
+		return $arr;
+	}
+	public function selfloop_edges(){
+		$arr = [];
+		for($i = 0;$i < count($this->edges);$i++){
+			if ($this->edges[$i][0] == $this->edges[$i][1]){
+				array_push($arr,$this->edges[$i]);
+			}
+		}
+		return $arr;
+	}
+	public function induced_subgraph($nbunch){
+		$sub = new Graph();
+		$sub->nodes = $nbunch;
+		$edge = [];
+		for($i = 0;$i < count($this->edges);$i++){
+			if (in_array($this->edges[$i][0], $nbunch) && in_array($this->edges[$i][1], $nbunch)) {
+				//գտնում է այն կողերը որոնք կազմված են տրված գագաթներով
+				array_push($edge,$this->edges[$i]);
+			}
+		}
+		$sub->edges = $edge;
+		return $sub;
+	}
 	public function draw(){ 
 		$node=$this->nodes;
 		$edge=$this->edges;
