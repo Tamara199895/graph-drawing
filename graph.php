@@ -64,27 +64,22 @@ class Graph{
 			}
 		}
 	}
-	
 	public function draw(){ 
-        $node=$this->nodes;
-        $edge=$this->edges;
-        $arr=[];
-        for($i=0;$i<count($node);$i++){//գեներացնում է կոորդինատներ գագաթների համար;
-        $angle = deg2rad(mt_rand(0, 360));
-        $pointRadius = mt_rand(0, 360);
-        $point = array(
-           'x' => sin($angle) * $pointRadius,
-           'y' => cos($angle) * $pointRadius,
-           'name' => $node[$i]
-        );
-        array_push($arr,$point);
-        }
-        ?>
-        <html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-</head>
+		$node=$this->nodes;
+		$edge=$this->edges;
+		$arr=[];
+		for($i=0;$i<count($node);$i++){//գեներացնում է կոորդինատներ գագաթների համար;
+		$angle = deg2rad(mt_rand(0, 360));
+		$pointRadius = mt_rand(0, 360);
+		$point = array(
+		   'x' => sin($angle) * $pointRadius,
+		   'y' => cos($angle) * $pointRadius,
+		   'name' => $node[$i]
+		);
+		array_push($arr,$point);
+		}
+		?>
+		<html>
 <body>
   <canvas id="myCanvas" width="650px" height="550px"></canvas>
   <script>
@@ -95,22 +90,22 @@ class Graph{
 </script>
   <?php  
     for($i=0;$i<count($edge);$i++){
-            for($j=0;$j<count($arr);$j++){//գտնում է կողերի կոորդինատները;
-                if ($edge[$i][0]==$arr[$j]['name']) {
-                    $x1=$arr[$j]['x'];
-                    $y1=$arr[$j]['y'];
-                    
-                }
-                else if($edge[$i][1]==$arr[$j]['name']){
-                    $x2=$arr[$j]['x'];
-                    $y2=$arr[$j]['y'];
-                }
-            }
-//             print "<pre>";
-// print_r($arr);
-  ?>                
+			for($j=0;$j<count($arr);$j++){//գտնում է կողերի կոորդինատները;
+				
+				if ($edge[$i][0]==$arr[$j]['name']) {
+					$x1=$arr[$j]['x'];
+					$y1=$arr[$j]['y'];
+					$name=$node[$i];
+				}
+				else if($edge[$i][1]==$arr[$j]['name']){
+					$x2=$arr[$j]['x'];
+					$y2=$arr[$j]['y'];
+					$name=$node[$i];
+				}
+			}
+  ?>				
 <script>
-function drawLine (X1, Y1, X2, Y2){//գծում է կողերը
+function drawUnDirected (X1, Y1, X2, Y2){//գծում է կողերը
   ctx.save();
   ctx.beginPath();
   ctx.translate(canvas.width/2, canvas.height/2)
@@ -118,31 +113,58 @@ function drawLine (X1, Y1, X2, Y2){//գծում է կողերը
   ctx.lineTo(X2, Y2);
   ctx.stroke();
   ctx.restore();
-  
-  
+  ctx.beginPath();
 }
-function drowNodes(X1,Y1){//գծում է գագաթները
-    ctx.save()
-    ctx.beginPath();
-    ctx.translate(canvas.width/2, canvas.height/2)
-    ctx.arc(X1, Y1, 7, 0, 2 * Math.PI);
-    ctx.stroke();
+function drawDirected(X1,Y1,X2,Y2){
+ctx.save();
+ctx.beginPath();
+ctx.translate(canvas.width/2, canvas.height/2)
+canvas_arrow(ctx, X1, Y1, X2, Y2);
+canvas_arrow(ctx, X1, Y1, X2, Y2);
+canvas_arrow(ctx, X1, Y1, X2, Y2);
+canvas_arrow(ctx, X1, Y1, X2, Y2);
+ctx.stroke();
+ctx.restore();
+}
+function drawNodes(X1,Y1,name){//գծում է գագաթները
+	ctx.save();
+	ctx.beginPath();
+	ctx.translate(canvas.width/2, canvas.height/2)
+	ctx.arc(X1, Y1, 7, 0, 2 * Math.PI);
+	// drawText(X1,Y1,name);
+  ctx.stroke();
   ctx.restore();
   ctx.fillStyle = "#B34EE9";
   ctx.fill();
-   
 }
-drowNodes(<?=$x1 ?>,<?=$y1 ?>);
-drowNodes(<?=$x2 ?>,<?=$y2 ?>)
-drawLine(<?=$x1 ?> ,<?= $y1?> ,<?= $x2?> ,<?=$y2 ?>)
+function drawText(X1,Y1,name){//տպում է գագաթի անունը
+ctx.font = "30px Arial";
+ctx.fillText(name, X1, Y1);
+}
+function canvas_arrow(context, fromx, fromy, tox, toy){
+  var headlen = 20;
+  var dx = tox - fromx;
+  var dy = toy - fromy;
+  var angle = Math.atan2(dy, dx);
+  context.moveTo(fromx, fromy);
+  context.lineTo(tox, toy);
+  context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+  context.moveTo(tox, toy);
+  context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+}
+drawNodes(<?=$x1 ?>,<?=$y1 ?>,<?=$name ?>);
+drawNodes(<?=$x2 ?>,<?=$y2 ?>, <?=$name ?>);
+drawDirected(<?=$x1 ?> ,<?= $y1?> ,<?= $x2?> ,<?=$y2 ?>)
+// drawUnDirected(<?=$x1 ?> ,<?= $y1?> ,<?= $x2?> ,<?=$y2?>)
   </script>
-  <?php      
-        }
+  <?php  	
+		}
   ?>
 </body>
-</html>
-<?php
-}
+</html>;
+<?php  }
+
+
 }
 ?>
 
