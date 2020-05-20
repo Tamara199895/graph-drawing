@@ -189,7 +189,7 @@ class Graph{
 			}
   ?>				
 <script>
-function drawUnDirected (X1, Y1, X2, Y2){//գծում է կողերը
+function drawEdges (X1, Y1, X2, Y2){//գծում է կողերը
   ctx.save();
   ctx.beginPath();
   ctx.translate(canvas.width/2, canvas.height/2)
@@ -199,7 +199,7 @@ function drawUnDirected (X1, Y1, X2, Y2){//գծում է կողերը
   ctx.restore();
   ctx.beginPath();
 }
-function drawDirected(X1,Y1,X2,Y2){
+function draw_Directed(X1,Y1,X2,Y2){
 ctx.save();
 ctx.beginPath();
 ctx.translate(canvas.width/2, canvas.height/2)
@@ -238,8 +238,7 @@ function canvas_arrow(context, fromx, fromy, tox, toy){
 }
 drawNodes(<?=$x1 ?>,<?=$y1 ?>,<?=$name ?>);
 drawNodes(<?=$x2 ?>,<?=$y2 ?>, <?=$name ?>);
-drawDirected(<?=$x1 ?> ,<?= $y1?> ,<?= $x2?> ,<?=$y2 ?>)
-// drawUnDirected(<?=$x1 ?> ,<?= $y1?> ,<?= $x2?> ,<?=$y2?>)
+drawEdges(<?=$x1 ?> ,<?= $y1?> ,<?= $x2?> ,<?=$y2?>)
   </script>
   <?php  	
 		}
