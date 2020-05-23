@@ -1,3 +1,4 @@
+
 <?php 
 class Graph{
 	public	$nodes = [];
@@ -108,88 +109,77 @@ class Graph{
 	public function number_of_edges(){
 		return count($this->edges);
 	}
-	public function number_of_selfloops(){
-		$count = 0;
-		for($i = 0;$i < count($this->edges);$i++){
-			if ($this->edges[$i][0] == $this->edges[$i][1]) {
-				$count++;
-			}
-		}
-		return $count;
-	}
-	public function nodes_with_selfloops(){
-		$arr=[];
-		for($i = 0;$i < count($this->edges);$i++){
-			if ($this->edges[$i][0]==$this->edges[$i][1]) {
-				array_push($arr,$this->edges[$i][1]);
-			}
+
+		
+	public function get_layout_random(){
+	    $arr=[];
+		for($i=0;$i<count($this->nodes);$i++){//գեներացնում է կոորդինատներ գագաթների համար;
+    		$angle = deg2rad(mt_rand(0, 360));
+    		$pointRadius = mt_rand(0, 360);
+    		$point = array(
+    		   'x' => sin($angle) * $pointRadius,
+    		   'y' => cos($angle) * $pointRadius,
+    		   'name' => $this->nodes[$i]
+    		);
+    		$arr[$i] = $point;
 		}
 		return $arr;
 	}
-	public function selfloop_edges(){
-		$arr = [];
-		for($i = 0;$i < count($this->edges);$i++){
-			if ($this->edges[$i][0] == $this->edges[$i][1]){
-				array_push($arr,$this->edges[$i]);
-			}
-		}
-		return $arr;
-	}
-	public function induced_subgraph($nbunch){
-		$sub = new Graph();
-		$sub->nodes = $nbunch;
-		$edge = [];
-		for($i = 0;$i < count($this->edges);$i++){
-			if (in_array($this->edges[$i][0], $nbunch) && in_array($this->edges[$i][1], $nbunch)) {
-				//գտնում է այն կողերը որոնք կազմված են տրված գագաթներով
-				array_push($edge,$this->edges[$i]);
-			}
-		}
-		$sub->edges = $edge;
-		return $sub;
-	}
+
+	 public function get_layout_spiral($dim=2,$resolution=0.35,$equistant=true){
+        if (count($this->nodes())==0) {
+            return [];
+        }
+        if (count($this->nodes())==1) {
+            return $this->nodes[0];
+        }
+        $pos=[];
+        if ($equistant) {
+            $chord=80;
+            $step=0.5;
+            $theta=$resolution;
+            for($i=0;$i < count($this->nodes);$i++){
+                $r=$step * $theta;
+                $theta +=$chord/$r;
+                $point = array(
+                    'x' => sin($theta)*$r,
+                    'y' => cos($theta)*$r,
+                    'name' => $this->nodes[$i]
+                );
+                $pos[$i]=$point;
+            }
+        }
+        else{
+            $step=80;
+            $angle=0.0;
+            $dist=0.0;
+            $radius=count($this->nodes);
+            for($i=0;$i<count($this->nodes);$i++){
+                $point=array(
+                    'x' => sin($angle)*$dist,
+                    'y' => cos($angle)*$dist,
+                    'name' =>$this->nodes[$i]
+                );
+                $pos[$i]=$point;
+                $dist+= $step;
+                $angle+=$resolution;
+            }
+        }
+        return $pos;
+    }
 	public function draw(){ 
 		$node=$this->nodes;
 		$edge=$this->edges;
-		$arr=[];
-		for($i=0;$i<count($node);$i++){//գեներացնում է կոորդինատներ գագաթների համար;
-		$angle = deg2rad(mt_rand(0, 360));
-		$pointRadius = mt_rand(0, 360);
-		$point = array(
-		   'x' => sin($angle) * $pointRadius,
-		   'y' => cos($angle) * $pointRadius,
-		   'name' => $node[$i]
-		);
-		array_push($arr,$point);
-		}
+        $arr = $this->get_layout_random();
 		?>
-		<html>
-<body>
-  <canvas id="myCanvas" width="650px" height="550px"></canvas>
+	
   <script>
     var canvas = document.body.querySelector('#myCanvas');
     var ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-</script>
-  <?php  
-    for($i=0;$i<count($edge);$i++){
-			for($j=0;$j<count($arr);$j++){//գտնում է կողերի կոորդինատները;
-				
-				if ($edge[$i][0]==$arr[$j]['name']) {
-					$x1=$arr[$j]['x'];
-					$y1=$arr[$j]['y'];
-					$name=$node[$i];
-				}
-				else if($edge[$i][1]==$arr[$j]['name']){
-					$x2=$arr[$j]['x'];
-					$y2=$arr[$j]['y'];
-					$name=$node[$i];
-				}
-			}
-  ?>				
-<script>
-function drawEdges (X1, Y1, X2, Y2){//գծում է կողերը
+    
+    function drawEdges (X1, Y1, X2, Y2){//գծում է կողերը
   ctx.save();
   ctx.beginPath();
   ctx.translate(canvas.width/2, canvas.height/2)
@@ -199,31 +189,22 @@ function drawEdges (X1, Y1, X2, Y2){//գծում է կողերը
   ctx.restore();
   ctx.beginPath();
 }
-function draw_Directed(X1,Y1,X2,Y2){
-ctx.save();
-ctx.beginPath();
-ctx.translate(canvas.width/2, canvas.height/2)
-canvas_arrow(ctx, X1, Y1, X2, Y2);
-canvas_arrow(ctx, X1, Y1, X2, Y2);
-canvas_arrow(ctx, X1, Y1, X2, Y2);
-canvas_arrow(ctx, X1, Y1, X2, Y2);
-ctx.stroke();
-ctx.restore();
-}
+
 function drawNodes(X1,Y1,name){//գծում է գագաթները
 	ctx.save();
 	ctx.beginPath();
 	ctx.translate(canvas.width/2, canvas.height/2)
-	ctx.arc(X1, Y1, 7, 0, 2 * Math.PI);
-	// drawText(X1,Y1,name);
+	ctx.arc(X1, Y1, 8, 0, 2 * Math.PI);
+	drawText(X1,Y1,name);
   ctx.stroke();
   ctx.restore();
-  ctx.fillStyle = "#B34EE9";
+  ctx.fillStyle = "black";
   ctx.fill();
 }
 function drawText(X1,Y1,name){//տպում է գագաթի անունը
-ctx.font = "30px Arial";
-ctx.fillText(name, X1, Y1);
+ctx.font = "25px Arial";
+ctx.fillStyle = "black";
+ctx.fillText(name, X1+8, Y1-5);
 }
 function canvas_arrow(context, fromx, fromy, tox, toy){
   var headlen = 20;
@@ -236,25 +217,42 @@ function canvas_arrow(context, fromx, fromy, tox, toy){
   context.moveTo(tox, toy);
   context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
 }
+  <?php  
+  for($i=0; $i<count($node); $i++){
+      $x1 = $arr[$i]['x'];
+      $y1 = $arr[$i]['y'];
+      $name = $arr[$i]['name'];
+    ?>555
 drawNodes(<?=$x1 ?>,<?=$y1 ?>,<?=$name ?>);
-drawNodes(<?=$x2 ?>,<?=$y2 ?>, <?=$name ?>);
-drawEdges(<?=$x1 ?> ,<?= $y1?> ,<?= $x2?> ,<?=$y2?>)
-  </script>
+    <?php
+  }
+    for($i=0;$i<count($edge);$i++){
+			for($j=0;$j<count($arr);$j++){//գտնում է կողերի կոորդինատները;
+				
+				if ($edge[$i][0]==$arr[$j]['name']) {
+					$x1=$arr[$j]['x'];
+					$y1=$arr[$j]['y'];
+				// 	$name=$node[$i];
+				}
+				else if($edge[$i][1]==$arr[$j]['name']){
+					$x2=$arr[$j]['x'];
+					$y2=$arr[$j]['y'];
+				// 	$name=$node[$i];
+				}
+			}
+  ?>				
+drawEdges(<?=$x1 ?> ,<?= $y1?> ,<?= $x2?> ,<?=$y2?>);
   <?php  	
 		}
   ?>
-</body>
-</html>;
-<?php  }
+</script>
 
-
-}
-?>
+<?php } } ?>
 
 
 <?php
 $G = new Graph();
-$G->add_nodes([1,2,3,4,5,6]);
-$G->add_edges([[2,3],[1,3],[3,4],[3,6],[3,5],[4,5]]);
+$G->add_nodes([1,2,3,4]);
+$G->add_edges([[1,2],[2,3],[1,3],[3,4]]);
 $G->draw();
 ?>
