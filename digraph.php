@@ -92,55 +92,6 @@ class DiGraph{
     return $arr;
   }
   
-    public function shortestPath($source, $target) {
-   
-    $d = array();
-    $pi = array();
-    $Q = new SplPriorityQueue();
-    foreach ($this->graph as $v => $adj) {
-      $d[$v] = INF; 
-      $pi[$v] = null;
-      foreach ($adj as $w => $cost) {
-        $Q->insert($w, $cost);
-      }
-    }
-    $d[$source] = 0;
-    while (!$Q->isEmpty()) {
-      $u = $Q->extract();
-      if (!empty($this->graph[$u])) {
-        foreach ($this->graph[$u] as $v => $cost) {
- 
-          $alt = $d[$u] + $cost;
-          if ($alt < $d[$v]) {
-            $d[$v] = $alt; 
-            $pi[$v] = $u;  
-                           
-          }
-        }
-      }
-    }
-    $S = new SplStack();
-    $u = $target;
-    $dist = 0;
-    while (isset($pi[$u]) && $pi[$u]) {
-      $S->push($u);
-      $dist += $this->graph[$u][$pi[$u]]; 
-      $u = $pi[$u];
-    }
-    if ($S->isEmpty()) {
-      echo "No route from $source to $target";
-    }
-    else {
-      $S->push($source);
-      echo "$dist:";
-      $sep = '';
-      foreach ($S as $v) {
-        echo $sep, $v;
-        $sep = '->';
-      }
-      echo "<br>";
-    }
-  }
     public function get_layout_random(){
       $arr=[];
     for($i=0;$i<count($this->nodes);$i++){//գեներացնում է կոորդինատներ գագաթների համար;
@@ -172,9 +123,6 @@ function draw_Edge(X1,Y1,X2,Y2){//գծում է կողերը ուղղորդվա�
 ctx.save();
 ctx.beginPath();
 ctx.translate(canvas.width/2, canvas.height/2)
-canvas_arrow(ctx, X1, Y1, X2, Y2);
-canvas_arrow(ctx, X1, Y1, X2, Y2);
-canvas_arrow(ctx, X1, Y1, X2, Y2);
 canvas_arrow(ctx, X1, Y1, X2, Y2);
 ctx.stroke();
 ctx.restore();
